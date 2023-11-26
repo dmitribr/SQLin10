@@ -194,3 +194,42 @@ FROM Costum
 ORDER BY num_cust;
 
 --Объединение таблиц =12
+SELECT vend_name, vend_country, prod_number   --запрашиваем 3 столбца из двух таблиц
+FROM Vendors, Products                        --обращаемся к двум таблицам.
+WHERE Vendors.vend_id = Products.vend_id;     --объеденяем две таблицы при помощи сравнения двух индификаторов(первичных ключей)
+--если не указазать where то строки объеденяться в разнобой без какой либо связи.декартово произведение.(перекрёсное объединение)
+
+SELECT vend_name, vend_country, prod_number      --точное такое же объединение как и предыдущее
+FROM Vendors INNER JOIN Products              --но с использованием инструкции INNER JOIN
+      ON Vendors.vend_id = Products.vend_id;  --в ON указываем условия связи, тоже самое что и указывали в WHERE
+
+SELECT vend_name, vend_country, prod_number, quantity  
+FROM Vendors, Products, Orders                        --объединение 3 таблиц
+WHERE Vendors.vend_id = Products.vend_id
+  AND Orders.vend_id = Vendors.vend_id            --сравнение их идентификаторов, для того чтобы строки имели связь между собой
+  AND order_id = 203;                     --и дополнительное условие с указанием id
+
+--Создание расширенных объединений =13
+SELECT vend_name, prod_number, quantity  
+FROM Vendors AS V, Products AS P, Orders AS O   --Указание псевдонимов таблиц для сокращения дальнейших записей
+WHERE V.vend_id = P.vend_id
+  AND O.vend_id = V.vend_id            
+  AND order_id = 203;
+
+SELECT P1.prod_id, P1.prod_number, P1.prod_name 
+FROM Products AS P1, Products AS P2          --самообъединение
+WHERE P1.prod_name = P2.prod_name           --если нужно два условия или больше в одной таблице то можно задать разные псевдонимы
+  AND P2.prod_number = 845;                 --одной и той же таблице
+
+SELECT V.*, P.prod_number, O.quantity           -- символ * вернёт все столбцы из V таблицы которые уникальны по отношению к другим излвекаемым столбцам
+FROM Vendors AS V, Products AS P, Orders AS O   --естественное объединение
+WHERE V.vend_id = P.vend_id
+  AND O.vend_id = V.vend_id            
+  AND order_id = 203;
+
+SELECT Vendors.vend_name, Products.prod_number      
+FROM Vendors LEFT OUTER JOIN Products              --внешнее объединение, если имеются пустые строки то она из так же извлекёт
+      ON Vendors.vend_id = Products.vend_id        --LEFT извлекёт все троки левой таблицы, RIGHT правой таблицы - Products
+GROUP BY Vendors.vend_name;     --дополнительно групперуем по vend_name
+
+--Комбинированные запросы =14 (многократное использование SELECT)
