@@ -295,3 +295,40 @@ DROP COLUMN tab_phone;    --удаление столбца
 DROP TABLE Newtab;   --удаление всей таблицы
 
 --Представления  =18
+CREATE VIEW ProdTab AS          --создание представления ProdTab, создаёт и хранит инструкцию(запросы)
+SELECT tab_name, tab_phone
+FROM Newtab, Products
+WHERE Newtab.tab_id = Products.prod_id;
+
+SELECT tab_name, tab_phone
+FROM ProdTab                       --воспользуемся представлением
+WHERE tab_id = '456';              --и укажем дополнительное условие
+
+DROP VIEW ProdTab;            --удаление представления
+
+CREATE VIEW VendText AS
+SELECT RTRIM(vend_name) + '(' + RTRIM(vend_country) + ')'   --представление с конкатинацией внутри
+       AS vend_title
+FROM Vendors;
+
+SELECT *                        --использование данного представления
+FROM VendText;
+
+--Хранимые процедуры =19
+CREATE PROCEDURE MailListCoint (
+  ListCount OUT INTEGER           --аргумент возрвращает(OUT) занчение из процедуры. 
+)
+IS
+  v_rows INTEGER;
+BEGIN
+  SELECT COUNT(*) INTO v_rows
+  FROM Costum                         --Begin - end хранимая процедура
+  WHERE NOT cust_email IS NULL;
+  ListCount := v_rows;            --выходному аргументу присваевается значение 
+END;
+
+var ReturnValue NUMBER                --объявляется переменная которая будет хранить значение возвращаемое процедурой 
+EXEC MailListCoint(:ReturnValue);     --запускается сама процедура
+SELECT ReturnValue;                   --отображение полученного значения.
+
+--Обработка транзакций =20
