@@ -233,3 +233,39 @@ FROM Vendors LEFT OUTER JOIN Products              --внешнее объеди
 GROUP BY Vendors.vend_name;     --дополнительно групперуем по vend_name
 
 --Комбинированные запросы =14 (многократное использование SELECT)
+SELECT cust_name, cust_email
+FROM Costum
+WHERE cust_state IN ('IL', 'MI');     
+UNION                               --Union на основании двух запросов выдаст одну общую таблицу, все строки будут уникальными
+SELECT cust_name, cust_email          --но если указать UNION ALL то запрос вернёт все строки и дубликаты
+FROM Costum                         --эти же запросы можно скомбинировать в WHERE через OR
+WHERE cust_id = 8344
+ORDER BY cust_name;         --все два запроса будут сортироваться по cust_name
+
+--Добавление данных =15
+INSERT INTO Costum(cust_id,               --добавление строки в таблицу Costum, перечисляются через запятую столбцы
+                   cust_name,
+                   cust_state,
+                   cust_email)
+VALUES ('345',                            --затем в values указывается значение строк для каждого столбца
+        'Jon',
+        'NY',
+        NULL);
+
+INSERT INTO Costum(cust_id,
+                   cust_name,
+                   cust_state,
+                   cust_email)
+SELECT cust_id,                     --добваит строки из таблицы CustNew, название столбцов могут различаться
+       cust_name,
+       cust_state,
+       cust_email
+FROM CustNew;
+
+SELECT *
+INTO CustCopy           --INTO создаёт полную копию таблицы
+FROM Costum;
+CREATE TABLE CustCopy AS    --точно такой же копия но другой синтаксист для MySQL/PostgreSQL/MariaDB
+SELECT * FROM Costum;
+
+--Обновление и удаление данных =16
